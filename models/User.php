@@ -105,8 +105,8 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
      */
     public function validatePassword($password)
     {
-        //var_dump (\Yii::$app->getSecurity()->generatePasswordHash("admin"));
-        //exit;
+        var_dump (\Yii::$app->getSecurity()->generatePasswordHash("admin"));
+        exit;
         return (\Yii::$app->getSecurity()->validatePassword($password, $this->password));
     }
 }
