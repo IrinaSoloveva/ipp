@@ -1,5 +1,7 @@
 <?php
 
+use \yii\widgets\DetailView;
+
 /** @var yii\web\View $this */
 
 $this->title = 'My Yii Application';
@@ -20,10 +22,22 @@ $this->title = 'My Yii Application';
             <div class="col-lg-4">
                 <h2>Heading</h2>
 
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
+                <?= DetailView::widget([
+
+                    'model' => $modelUsers,
+                    'attributes' => [
+                        'name',
+                        [
+                            'label' => 'ФИО',
+                            'attribute' => 'name'
+                        ],
+                        [
+                            'label' => 'Подразделение',
+                            'value' => $modelUsers->department->name
+                        ]
+                    ],
+
+                ]) ?>
 
                 <p><a class="btn btn-outline-secondary" href="http://www.yiiframework.com/doc/">Yii Documentation &raquo;</a></p>
             </div>
