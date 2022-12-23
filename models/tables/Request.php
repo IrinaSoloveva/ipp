@@ -103,6 +103,16 @@ class Request extends \yii\db\ActiveRecord
         return $this->hasMany(MethodicalWork::class, ['request_id' => 'id']);
     }
 
+       /**
+     * Gets array type_methodical_work_id for [[MethodicalWorks]].
+     *
+     * @return array
+     */
+    public function getIdTypeMethodicalWorks()
+    {
+        return $this->hasMany(MethodicalWork::class, ['request_id' => 'id'])->select('type_methodical_work_id')->column();
+    }
+
     /**
      * Gets query for [[Response]].
      *
@@ -172,4 +182,5 @@ class Request extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Users::class, ['id' => 'users_id_response']);
     }
+
 }

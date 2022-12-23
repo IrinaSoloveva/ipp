@@ -9,9 +9,11 @@ use yii\grid\GridView;
 /** @var yii\web\View $this */
 /** @var app\models\filters\TypeMethodicalWorkFilter $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
+/** @var app\controllers\AdminTypeMethodicalWorkController $arrIdTypeMethodicalWorks */
 
 $this->title = 'Type Methodical Works';
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="type-methodical-work-index">
 
@@ -43,9 +45,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
                 ],
         ],
-        'rowOptions' => function ($model) {
-                return ['class' => 'rowGrid'];
-    },
+        'rowOptions' => function ($model, $key, $index, $grid) use ($arrIdTypeMethodicalWorks) {
+                if (in_array($model['id'], $arrIdTypeMethodicalWorks)) 
+                    return ['class' => 'rowGrid list-group-item-success'];
+                else 
+                    return ['class' => 'rowGrid'];
+        },
     ]); ?>
 
 

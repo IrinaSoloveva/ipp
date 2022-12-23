@@ -3,10 +3,13 @@
 namespace app\controllers;
 
 use app\models\tables\TypeMethodicalWork;
+use app\models\tables\Request;
 use app\models\filters\TypeMethodicalWorkFilter;
+use app\models\filters\RequestFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 
 /**
  * AdminTypeMethodicalWorkController implements the CRUD actions for TypeMethodicalWork model.
@@ -41,9 +44,21 @@ class AdminTypeMethodicalWorkController extends Controller
         $searchModel = new TypeMethodicalWorkFilter();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
+        $searchModelRequest = new RequestFilter();
+        $dataProviderRequest = $searchModelRequest->search([
+            'table_name' => 'methodical_work',
+            'academic_year' => \Yii::$app->session['year'],
+            'users_id_request' => \Yii::$app->user->id
+        ]);
+
+        $idRequest = ArrayHelper::getColumn($dataProviderRequest->getKeys(), 'id')[0];
+
+        $arrIdTypeMethodicalWorks = Request::findOne($idRequest)->getIdTypeMethodicalWorks();
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'arrIdTypeMethodicalWorks' => $arrIdTypeMethodicalWorks
         ]);
     }
 
