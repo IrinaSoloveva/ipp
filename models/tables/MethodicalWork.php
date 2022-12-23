@@ -45,10 +45,16 @@ class MethodicalWork extends \yii\db\ActiveRecord
     {
         return [
             [['load_plan_one', 'load_fact_one', 'load_plan_two', 'load_fact_two'], 'number'],
-            [['mark_date_one', 'mark_date_two'], 'safe'],
-            [['mark_number_one', 'mark_number_two', 'type_methodical_work_id', 'request_id', 'mark_name_one_id', 'mark_name_two_id'], 'integer'],
+            //[['mark_date_one', 'mark_date_two'], 'date', 'message' => 'Дата в формате d-m-Y'],
+            // ensure empty values are stored as NULL in the database
+            [['mark_date_one', 'mark_date_two'], 'default', 'value' => null],
+            [['mark_name_one_id', 'mark_name_two_id'], 'default', 'value' => 1],
+            // validate the date and overwrite `deadline` with the unix timestamp
+            //['mark_date_one', 'date', 'timestampAttribute' => 'mark_date_one'],
+            //['mark_date_two', 'date', 'timestampAttribute' => 'mark_date_two'],
+            [['type_methodical_work_id', 'request_id', 'mark_name_one_id', 'mark_name_two_id'], 'integer'],
             [['type_methodical_work_id', 'request_id', 'mark_name_one_id', 'mark_name_two_id'], 'required'],
-            [['discipline_one', 'discipline_two'], 'string', 'max' => 45],
+            [['discipline_one', 'discipline_two', 'mark_number_one', 'mark_number_two'], 'string', 'max' => 45],
             [['request_id'], 'exist', 'skipOnError' => true, 'targetClass' => Request::class, 'targetAttribute' => ['request_id' => 'id']],
             [['mark_name_one_id'], 'exist', 'skipOnError' => true, 'targetClass' => TypeEvent::class, 'targetAttribute' => ['mark_name_one_id' => 'id']],
             [['mark_name_two_id'], 'exist', 'skipOnError' => true, 'targetClass' => TypeEvent::class, 'targetAttribute' => ['mark_name_two_id' => 'id']],

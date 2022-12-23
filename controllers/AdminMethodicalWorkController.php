@@ -3,6 +3,9 @@
 namespace app\controllers;
 
 use app\models\tables\MethodicalWork;
+use app\models\tables\TypeEvent;
+use app\models\tables\Request;
+use app\models\tables\TypeMethodicalWork;
 use app\models\filters\MethodicalWorkFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -73,9 +76,27 @@ class AdminMethodicalWorkController extends Controller
     {
         $model = new MethodicalWork();
 
+        $idTypeMethodicalWork = \Yii::$app->request->get('id');
+
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id, 'type_methodical_work_id' => $model->type_methodical_work_id, 'request_id' => $model->request_id, 'mark_name_one_id' => $model->mark_name_one_id, 'mark_name_two_id' => $model->mark_name_two_id]);
+            if ($model->load($this->request->post())) { 
+                $idRequest = $this->createRequest();
+                
+                if (!is_null($idRequest)) {
+                    $model->request_id = $idRequest;
+                    $model->type_methodical_work_id = $idTypeMethodicalWork;
+                    if  ($model->save()) {
+                        return $this->redirect(['view', 'id' => $model->id, 
+                                                'type_methodical_work_id' => $model->type_methodical_work_id, 
+                                                'request_id' => $model->request_id, 
+                                                'mark_name_one_id' => $model->mark_name_one_id, 
+                                                'mark_name_two_id' => $model->mark_name_two_id]);
+                    } 
+                    else {
+                        $this->deleteRequest($idRequest);
+                    }       
+                }
+                                                          
             }
         } else {
             $model->loadDefaultValues();
@@ -83,7 +104,56 @@ class AdminMethodicalWorkController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'itemTypeEvent' => $this->getModelTypeEvent(),
+            'nameTypeMethodicalWork' => $this->getNameTypeMethodicalWork($idTypeMethodicalWork),
         ]);
+    }
+
+    /**
+     * Creates a new Request model.
+     * @return integer id new Request
+     */
+    public function createRequest()
+    {
+        $model = new Request();
+
+        if (\Yii::$app->user->id) {
+            $userId = \Yii::$app->user->id;
+            // TODO - учебный год из сессии
+
+            $model->table_name = 'methodical_work';
+            // TODO - неверный формат даты
+            $model->date_request = date("d.m.y");
+            $model->academic_year = '2022';
+            $model->users_id_request = $userId;
+            $model->users_id_response = $userId;
+            $model->status_id = '1';
+            $model->response_id = '1';
+
+            $model->save();
+        }
+
+        return $model->id;
+    }
+
+    /**
+     * Deletes a new Request model.
+     * @return string|\yii\web\Response
+     */
+    public function deleteRequest($id) {
+        //TODO дописать комментарии и return
+        $request = Request::findOne($id);
+        $request->delete();
+    }
+
+    /**
+     * Gets name for [[TypeMethodicalWork]].
+     *
+     * @return string name
+     */
+    public function getNameTypeMethodicalWork($id) {
+        $model = TypeMethodicalWork::findOne($id);
+        return $model->name;
     }
 
     /**
@@ -145,6 +215,15 @@ class AdminMethodicalWorkController extends Controller
             return $model;
         }
 
+        throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    protected function getModelTypeEvent()
+    {
+        if ($modelTypeEvent = TypeEvent::find()->select(['name'])->indexBy('id')->column()) {
+            return $modelTypeEvent;
+        }
+        //TODO поправить текст ошибки
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 }

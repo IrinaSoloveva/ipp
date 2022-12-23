@@ -35,7 +35,6 @@ class Grid {
     }
 
     _getElementTeg(element) {
-      console.log( $(element).prop("tagName"));
       return $(element).prop("tagName");
     }
 

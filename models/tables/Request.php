@@ -47,7 +47,7 @@ class Request extends \yii\db\ActiveRecord
             [['date_request', 'date_response'], 'safe'],
             [['academic_year', 'users_id_request', 'users_id_response', 'status_id', 'response_id'], 'integer'],
             [['users_id_request', 'users_id_response', 'status_id', 'response_id'], 'required'],
-            [['table_name'], 'string', 'max' => 15],
+            [['table_name'], 'string', 'max' => 25],
             [['response_id'], 'exist', 'skipOnError' => true, 'targetClass' => Response::class, 'targetAttribute' => ['response_id' => 'id']],
             [['status_id'], 'exist', 'skipOnError' => true, 'targetClass' => Status::class, 'targetAttribute' => ['status_id' => 'id']],
             [['users_id_request'], 'exist', 'skipOnError' => true, 'targetClass' => Users::class, 'targetAttribute' => ['users_id_request' => 'id']],

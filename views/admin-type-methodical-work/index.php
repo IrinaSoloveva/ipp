@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'template' => '{update}',
                 'urlCreator' => function ($action, $model, $key, $index) {    
                   if ($action === 'update') {
-                      $url ='index.php?r=admin-methodical-work%2Fcreate&id='.$model->id;
+                      $url ='/index.php?r=admin-methodical-work%2Fcreate&id='.$model->id;
                       return $url;
                   }    
                 }

@@ -39,7 +39,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav'],
         'items' => [
-            ['label' => 'Home', 'url' => ['/site/index']],
+            ['label' => 'Главная', 'url' => ['/site/index']],
             ['label' => 'About', 'url' => ['/site/about']],
             ['label' => 'Contact', 'url' => ['/site/contact']],
             Yii::$app->user->isGuest
@@ -61,8 +61,17 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
 <main id="main" class="flex-shrink-0" role="main">
     <div class="container">
         <?php if (!empty($this->params['breadcrumbs'])): ?>
-            <?= Breadcrumbs::widget(['links' => $this->params['breadcrumbs']]) ?>
+            <?= Breadcrumbs::widget([
+                'homeLink' => ['label' => 'Главная', 'url' => '/'],
+                'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+            ]) ?>
         <?php endif ?>
+
+<nav aria-label="...">
+    <ul id="academicYear" class="pagination">
+    </ul>
+</nav>
+
         <?= Alert::widget() ?>
         <?= $content ?>
     </div>
