@@ -10,6 +10,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 
 /**
  * AdminTypeMethodicalWorkController implements the CRUD actions for TypeMethodicalWork model.
@@ -44,21 +45,43 @@ class AdminTypeMethodicalWorkController extends Controller
         $searchModel = new TypeMethodicalWorkFilter();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
-        $searchModelRequest = new RequestFilter();
-        $dataProviderRequest = $searchModelRequest->search([
-            'table_name' => 'methodical_work',
-            'academic_year' => \Yii::$app->session['year'],
-            'users_id_request' => \Yii::$app->user->id
-        ]);
+        $arrIdTypeMethodicalWorks = NULL;
+        $arrIdMethodicalWorks = NULL;
+        $idRequest = NULL;
 
-        $idRequest = ArrayHelper::getColumn($dataProviderRequest->getKeys(), 'id')[0];
+        $session = \Yii::$app->session;
+        if (!$session->has('academicYear')) 
+            $session->set('academicYear', date ('Y'));
+        $date = $session->get('academicYear');
 
-        $arrIdTypeMethodicalWorks = Request::findOne($idRequest)->getIdTypeMethodicalWorks();
+        //пользователь авторизован
+        if (\Yii::$app->user->id) {
+            $searchModelRequest = new RequestFilter();
+            $dataProviderRequest = $searchModelRequest->search([
+                'table_name' => 'methodical_work',
+                'academic_year' => \Yii::$app->session->get('academicYear'),
+                'users_id_request' => \Yii::$app->user->id
+            ]);
+
+            //существуют записи пользователя
+            $arrayRequest = ArrayHelper::getColumn($dataProviderRequest->getKeys(), 'id');
+    
+            //TODO Предусмотреть, что запрос не может быть пустым!!! те если удалены все виды работ из запроса, то он не существует
+            if (!empty($arrayRequest)) {
+                $idRequest = $arrayRequest[0];
+                //select id, type_methodical_work_id from MethodicalWork
+                $arrIdMethodicalWorks = Request::findOne($idRequest)->getIdTypeMethodicalWorks();
+                //select type_methodical_work_id from MethodicalWork
+                $arrIdTypeMethodicalWorks = ArrayHelper::getColumn($arrIdMethodicalWorks, 'type_methodical_work_id');
+            }           
+        }     
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'arrIdTypeMethodicalWorks' => $arrIdTypeMethodicalWorks
+            'arrIdTypeMethodicalWorks' => $arrIdTypeMethodicalWorks,
+            'arrIdMethodicalWorks' => $arrIdMethodicalWorks,
+            'idRequest' => $idRequest
         ]);
     }
 

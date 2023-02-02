@@ -48,7 +48,8 @@ class RequestFilter extends Request
             'query' => $query,
         ]);
 
-        $this->load($params);
+        //если параметры загружаются не из формы, то нужно указать пустое значение ключа (имени) формы
+        if (!$this->load($params)) $this->load($params, '');
 
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails

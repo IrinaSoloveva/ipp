@@ -1,16 +1,14 @@
 class Grid {
     constructor(containerId) {
-      this.containerId = containerId;      
-      this.arrayCheckboxKeys = []; // Массив, состоящий из ключей, связанных с выбранными строками
+      this.containerId = containerId; 
+      // Массив, состоящий из ключей, связанных с выбранными строками     
+      this.arrayCheckboxKeys = [];
       this._init(containerId);
     }
 
     _init(containerId) {
       this.containerId = '#' + containerId;
       this._checkRowsSelect();
-
-      //var keys = $('#gridTypeMethodicalWork').yiiGridView('getSelectedRows');
-
     };
 
     //check строки по клику на любой ее части
@@ -50,16 +48,5 @@ class Grid {
       let key = this._getKeyRow(element);
       return $('input[type=checkbox]').filter(function(){return this.value==key});
     }
-
-}
-
-window.onload = () => {
-
-  let mygrid = new Grid('gridTypeMethodicalWork'); 
-
-
-
- 
-
 
 }

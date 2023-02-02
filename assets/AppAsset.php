@@ -23,7 +23,8 @@ class AppAsset extends AssetBundle
         'css/site.css',
     ];
     public $js = [
-        'js/jsGridCheckbox2.js',
+        'js/jsIndex.js',
+        'js/jsGridCheckbox.js',
         'js/jsAcademicYear.js',
     ];
     public $depends = [

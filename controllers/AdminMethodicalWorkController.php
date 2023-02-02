@@ -68,70 +68,80 @@ class AdminMethodicalWorkController extends Controller
     }
 
     /**
-     * Creates a new MethodicalWork model.
+     * Creates a new MethodicalWork model from the teacher (status 1).
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
+     * @throws NotFoundHttpException if the user not found
      */
     public function actionCreate()
     {
-        $model = new MethodicalWork();
+        $user = \Yii::$app->user->id;
 
-        $idTypeMethodicalWork = \Yii::$app->request->get('id');
+        // TODO - не предусмотрен статус пользователя !=1
+        //пользователь авторизован
+        if ($user) {
+            $model = new MethodicalWork();
 
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post())) { 
-                $idRequest = $this->createRequest();
-                
-                if (!is_null($idRequest)) {
-                    $model->request_id = $idRequest;
-                    $model->type_methodical_work_id = $idTypeMethodicalWork;
-                    if  ($model->save()) {
-                        return $this->redirect(['view', 'id' => $model->id, 
-                                                'type_methodical_work_id' => $model->type_methodical_work_id, 
-                                                'request_id' => $model->request_id, 
-                                                'mark_name_one_id' => $model->mark_name_one_id, 
-                                                'mark_name_two_id' => $model->mark_name_two_id]);
+            $idTypeMethodicalWork = \Yii::$app->request->get('id');
+            $idRequest = \Yii::$app->request->get('request');
+            $newRequest = false;
+    
+            if ($this->request->isPost) {
+                if ($model->load($this->request->post())) { 
+                    
+                    if (is_null($idRequest)) {
+                        $idRequest = $this->createRequest($user);
+                        $newRequest = true;
                     } 
-                    else {
-                        $this->deleteRequest($idRequest);
-                    }       
+                                     
+                    if ((!is_null($idRequest)) && (!is_null($idTypeMethodicalWork))) {
+                        $model->request_id = $idRequest;
+                        $model->type_methodical_work_id = $idTypeMethodicalWork;
+                        if  ($model->save()) {
+                            return $this->redirect('/index.php?r=admin-type-methodical-work', 301)->send();
+                        } 
+                        else {
+                            if ($newRequest) $this->deleteRequest($idRequest);
+                            \Yii::$app->session->setFlash('warning', 'Ошибка записи');
+                            return $this->redirect('/index.php?r=admin-type-methodical-work', 301)->send();
+                        }       
+                    }
+                                                              
                 }
-                                                          
+            } else {
+                $model->loadDefaultValues();
             }
-        } else {
-            $model->loadDefaultValues();
+    
+            return $this->render('create', [
+                'model' => $model,
+                'itemTypeEvent' => $this->getModelTypeEvent(),
+                'nameTypeMethodicalWork' => $this->getNameTypeMethodicalWork($idTypeMethodicalWork),
+            ]);
         }
-
-        return $this->render('create', [
-            'model' => $model,
-            'itemTypeEvent' => $this->getModelTypeEvent(),
-            'nameTypeMethodicalWork' => $this->getNameTypeMethodicalWork($idTypeMethodicalWork),
-        ]);
+        else {
+            throw new NotFoundHttpException('Авторизуйтесь.');
+        }
+    
     }
 
     /**
-     * Creates a new Request model.
+     * Creates a new Request.
+     * @param int $userId ID
      * @return integer id new Request
      */
-    public function createRequest()
+    public function createRequest($userId)
     {
         $model = new Request();
 
-        if (\Yii::$app->user->id) {
-            $userId = \Yii::$app->user->id;
-            // TODO - учебный год из сессии
-
             $model->table_name = 'methodical_work';
             // TODO - неверный формат даты
-            $model->date_request = date("d.m.y");
-            $model->academic_year = '2022';
+            $model->date_request = \Yii::$app->formatter->asDate('now', 'dd.MM.yyyy');
+            $model->academic_year = \Yii::$app->session->get('academicYear');
             $model->users_id_request = $userId;
-            $model->users_id_response = $userId;
             $model->status_id = '1';
             $model->response_id = '1';
 
-            $model->save();
-        }
+            $model->save();       
 
         return $model->id;
     }
@@ -167,9 +177,9 @@ class AdminMethodicalWorkController extends Controller
      * @return string|\yii\web\Response
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id, $type_methodical_work_id, $request_id, $mark_name_one_id, $mark_name_two_id)
+    public function actionUpdate($id)
     {
-        $model = $this->findModel($id, $type_methodical_work_id, $request_id, $mark_name_one_id, $mark_name_two_id);
+        $model = $this->findModelById($id);
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id, 'type_methodical_work_id' => $model->type_methodical_work_id, 'request_id' => $model->request_id, 'mark_name_one_id' => $model->mark_name_one_id, 'mark_name_two_id' => $model->mark_name_two_id]);
@@ -177,6 +187,8 @@ class AdminMethodicalWorkController extends Controller
 
         return $this->render('update', [
             'model' => $model,
+            'itemTypeEvent' => $this->getModelTypeEvent(),
+            'nameTypeMethodicalWork' => $this->getNameTypeMethodicalWork($model->type_methodical_work_id),
         ]);
     }
 
@@ -218,6 +230,28 @@ class AdminMethodicalWorkController extends Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
+    /**
+     * Finds the MethodicalWork model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param int $id ID
+     * @return MethodicalWork the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findModelById($id)
+    {
+        if (($model = MethodicalWork::findOne(['id' => $id])) !== null) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    /**
+     * Get the TypeEvent model as a 'name' column
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @return array from the 'name' column
+     * @throws NotFoundHttpException if the model cannot be found
+     */
     protected function getModelTypeEvent()
     {
         if ($modelTypeEvent = TypeEvent::find()->select(['name'])->indexBy('id')->column()) {
@@ -226,4 +260,5 @@ class AdminMethodicalWorkController extends Controller
         //TODO поправить текст ошибки
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+
 }

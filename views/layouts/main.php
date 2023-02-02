@@ -24,6 +24,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
 <html lang="<?= Yii::$app->language ?>" class="h-100">
 <head>
     <title><?= Html::encode($this->title) ?></title>
+    <
     <?php $this->head() ?>
 </head>
 <body class="d-flex flex-column h-100">
@@ -68,8 +69,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
         <?php endif ?>
 
 <nav aria-label="...">
-    <ul id="academicYear" class="pagination">
-    </ul>
+    <ul id="academicYear" class="pagination"></ul>
 </nav>
 
         <?= Alert::widget() ?>

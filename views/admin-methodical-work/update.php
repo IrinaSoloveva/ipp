@@ -4,18 +4,19 @@ use yii\helpers\Html;
 
 /** @var yii\web\View $this */
 /** @var app\models\tables\MethodicalWork $model */
+/** @var app\controllers\AdminMethodicalWorkController $itemTypeEvent, $nameTypeMethodicalWork*/
 
-$this->title = 'Update Methodical Work: ' . $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Methodical Works', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id, 'type_methodical_work_id' => $model->type_methodical_work_id, 'request_id' => $model->request_id, 'mark_name_one_id' => $model->mark_name_one_id, 'mark_name_two_id' => $model->mark_name_two_id]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->title = 'Методическая работа';
+$this->params['breadcrumbs'][] = ['label' => 'Методическая работа', 'url' => ['/admin-type-methodical-work']];
+$this->params['breadcrumbs'][] = 'Редактировать';
 ?>
 <div class="methodical-work-update">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h3><?= Html::encode($nameTypeMethodicalWork) ?></h3>
 
     <?= $this->render('_form', [
         'model' => $model,
+        'itemTypeEvent' => $itemTypeEvent
     ]) ?>
 
 </div>

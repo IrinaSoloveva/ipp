@@ -44,9 +44,9 @@ class Request extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['date_request', 'date_response'], 'safe'],
+            [['date_request', 'date_response', 'users_id_request', 'users_id_response'], 'safe'],
             [['academic_year', 'users_id_request', 'users_id_response', 'status_id', 'response_id'], 'integer'],
-            [['users_id_request', 'users_id_response', 'status_id', 'response_id'], 'required'],
+            [['status_id', 'response_id'], 'required'],
             [['table_name'], 'string', 'max' => 25],
             [['response_id'], 'exist', 'skipOnError' => true, 'targetClass' => Response::class, 'targetAttribute' => ['response_id' => 'id']],
             [['status_id'], 'exist', 'skipOnError' => true, 'targetClass' => Status::class, 'targetAttribute' => ['status_id' => 'id']],
@@ -110,7 +110,7 @@ class Request extends \yii\db\ActiveRecord
      */
     public function getIdTypeMethodicalWorks()
     {
-        return $this->hasMany(MethodicalWork::class, ['request_id' => 'id'])->select('type_methodical_work_id')->column();
+        return $this->hasMany(MethodicalWork::class, ['request_id' => 'id'])->select('id, type_methodical_work_id')->asArray()->all();
     }
 
     /**

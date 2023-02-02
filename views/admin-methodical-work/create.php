@@ -7,7 +7,7 @@ use yii\helpers\Html;
 /** @var app\controllers\AdminMethodicalWorkController $itemTypeEvent, $nameTypeMethodicalWork */
 
 $this->title = 'Методическая работа';
-$this->params['breadcrumbs'][] = ['label' => 'Методическая работа', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Методическая работа', 'url' => ['/admin-type-methodical-work']];
 $this->params['breadcrumbs'][] = 'Добавить';
 ?>
 <div class="methodical-work-create">

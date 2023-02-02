@@ -26,13 +26,18 @@ class AcademicYear {
         "attr": "Next",
         "label": "»",
         "href": "#"
-      };    
+      };  
+      
+      this.nameSessionJs = 'year';
+      this.startYear = 2022;
+      this.countYearsInElement = 20;
+      this.countDisplayedYears = 3;
+
       this._init();
     }
 
     _init() {
-      this._renderClickYear();
-      this._createContainer();
+      this._getPhpSession();
     };
 
     _createContainer() {
@@ -50,16 +55,32 @@ class AcademicYear {
     _renderClickYear() {
       $(this.containerId).on('click', this._getStringWithId(this.attrIdLi), e => {
         this._setActiveYear(e.target.getAttribute(this.nameForAttrViewYearInLi));
-        location.reload();
+        this._setPhpSession();
       });
       $(this.containerId).on('click', this._getStringWithId(this.attrPaginationButtonNext.attr), e => {
         this._setNextActiveYear();
-        location.reload();
+        this._setPhpSession();
       });
       $(this.containerId).on('click', this._getStringWithId(this.attrPaginationButtonPrevious.attr), e => {
         this._setPreviousActiveYear();
-        location.reload();
+        this._setPhpSession();
       });
+    }
+
+    _setPhpSession() {
+      fetch('php/phpSetAcademicYear.php?year=' + this._getActiveYear())
+        .then(response => {location.reload();});
+    }
+
+    _getPhpSession() {
+      fetch('php/phpGetAcademicYear.php')
+        .then(response => response.text())
+        .then(year => {
+          this._setActiveYear(year);
+          this._createContainer();
+          this._renderClickYear();
+        });
+        
     }
 
     _getPaginationLiActive(label) {
@@ -108,14 +129,14 @@ class AcademicYear {
     }
 
     _getActiveYear() {
-      if (localStorage.getItem('year')) 
-        return Number(localStorage.getItem('year'));
+      if (localStorage.getItem(this.nameSessionJs)) 
+        return Number(localStorage.getItem(this.nameSessionJs));
       else
         return Number(this._getCurrentYear());     
     }
 
     _setActiveYear(year) {
-      localStorage.setItem('year', year);
+      localStorage.setItem(this.nameSessionJs, year);
     }
 
     _setNextActiveYear() {
@@ -124,9 +145,9 @@ class AcademicYear {
       let $arr = this._getArrayAllYears();
       let $lastElemArrayYears = $arr[$arr.length - 1];
       if ($newActiveYear < $lastElemArrayYears) {
-        localStorage.setItem('year', $newActiveYear);
+        this._setActiveYear($newActiveYear);
       } else {
-        localStorage.setItem('year', $lastElemArrayYears);
+        this._setActiveYear($lastElemArrayYears);
       }   
     }
 
@@ -136,9 +157,9 @@ class AcademicYear {
       let $arr = this._getArrayAllYears();
       let $firstElemArrayYears = $arr[0];
       if ($newActiveYear > $firstElemArrayYears) {
-        localStorage.setItem('year', $newActiveYear);
+        this._setActiveYear($newActiveYear);
       } else {
-        localStorage.setItem('year', $firstElemArrayYears);
+        this._setActiveYear($firstElemArrayYears);
       }   
     }
 
@@ -149,7 +170,7 @@ class AcademicYear {
 
     _getArrayAllYears() {
       let arr = [];
-      for (let i = 2022; i <= this._getCurrentYear() + 20; i++) {
+      for (let i = this.startYear; i <= this._getCurrentYear() + this.countYearsInElement; i++) {
 	      arr.push(i);
       }
       return arr;
@@ -167,17 +188,17 @@ class AcademicYear {
       let $arr = this._getArrayAllYears();
       let $arrView = [];
       if (indexActive === 0) {
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < this.countDisplayedYears; i++) {
           $arrView.push($arr[i]);
         }
       }
       else if (indexActive === $arr.length - 1) {
-        for (let i = $arr.length - 3; i < $arr.length; i++) {
+        for (let i = $arr.length - this.countDisplayedYears; i < $arr.length; i++) {
           $arrView.push($arr[i]);
         }
       }
       else {
-        for (let i = indexActive - 1; i < indexActive + 2; i++) {
+        for (let i = indexActive - 1; i < indexActive + (this.countDisplayedYears - 1); i++) {
           $arrView.push($arr[i]);
         }
       }
@@ -190,6 +211,3 @@ class AcademicYear {
 
 }
 
-window.onload = () => {
-  let mygrid = new AcademicYear(); 
-}
