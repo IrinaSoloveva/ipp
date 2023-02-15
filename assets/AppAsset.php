@@ -23,9 +23,9 @@ class AppAsset extends AssetBundle
         'css/site.css',
     ];
     public $js = [
-        'js/jsIndex.js',
-        'js/jsGridCheckbox.js',
-        'js/jsAcademicYear.js',
+        'js/jsIndex1.js',
+        'js/jsGridCheckbox3.js',
+        'js/jsAcademicYear1.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

@@ -32,7 +32,7 @@ use yii\jui\DatePicker;
 
         <?= $form->field($model,'mark_date_one')->widget(DatePicker::class, [
             'language' => 'ru',
-            'dateFormat' => 'dd.MM.yyyy',
+            'dateFormat' => 'yyyy.MM.dd',
             'options' => [
                 //'placeholder' => Yii::$app->formatter->asDate($model->created_at),
                 'class'=> 'form-control',

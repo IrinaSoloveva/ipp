@@ -126,4 +126,34 @@ class SiteController extends Controller
     {
         return $this->render('about');
     }
+
+    /**
+     * Get the academicYear from the session.
+     * If the academicYear is not found in the session, return the current year.
+     *
+     * @return string
+     */
+    public function actionSessionGet()
+    {
+        $session = Yii::$app->session;
+        if (!$session->isActive) $session->open();
+
+        if (!is_null($session['academicYear'])) echo $session['academicYear'];
+        else echo date ('Y');
+    }
+
+    /**
+     * Set the academicYear from the GET.
+     * If the academicYear is not found in the GET, set the current year.
+     */
+    public function actionSessionSet()
+    {
+        $session = Yii::$app->session;
+        if (!$session->isActive) $session->open();
+
+        $year = \Yii::$app->request->get('year');
+
+        if (!is_null($year)) $session['academicYear'] = $year;
+        else $session['academicYear'] = date ('Y');
+    }
 }

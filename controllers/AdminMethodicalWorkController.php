@@ -99,11 +99,10 @@ class AdminMethodicalWorkController extends Controller
                         $model->type_methodical_work_id = $idTypeMethodicalWork;
                         if  ($model->save()) {
                             return $this->redirect('/index.php?r=admin-type-methodical-work', 301)->send();
-                        } 
-                        else {
+                        } else {
                             if ($newRequest) $this->deleteRequest($idRequest);
                             \Yii::$app->session->setFlash('warning', 'Ошибка записи');
-                            return $this->redirect('/index.php?r=admin-type-methodical-work', 301)->send();
+                            //return $this->redirect('/index.php?r=admin-type-methodical-work', 301)->send();
                         }       
                     }
                                                               
@@ -125,55 +124,10 @@ class AdminMethodicalWorkController extends Controller
     }
 
     /**
-     * Creates a new Request.
-     * @param int $userId ID
-     * @return integer id new Request
-     */
-    public function createRequest($userId)
-    {
-        $model = new Request();
-
-            $model->table_name = 'methodical_work';
-            // TODO - неверный формат даты
-            $model->date_request = \Yii::$app->formatter->asDate('now', 'dd.MM.yyyy');
-            $model->academic_year = \Yii::$app->session->get('academicYear');
-            $model->users_id_request = $userId;
-            $model->status_id = '1';
-            $model->response_id = '1';
-
-            $model->save();       
-
-        return $model->id;
-    }
-
-    /**
-     * Deletes a new Request model.
-     * @return string|\yii\web\Response
-     */
-    public function deleteRequest($id) {
-        //TODO дописать комментарии и return
-        $request = Request::findOne($id);
-        $request->delete();
-    }
-
-    /**
-     * Gets name for [[TypeMethodicalWork]].
-     *
-     * @return string name
-     */
-    public function getNameTypeMethodicalWork($id) {
-        $model = TypeMethodicalWork::findOne($id);
-        return $model->name;
-    }
-
-    /**
      * Updates an existing MethodicalWork model.
-     * If update is successful, the browser will be redirected to the 'view' page.
+     * If update is successful, the browser will be redirected to the 'view' page [[TypeMethodicalWork]].
      * @param int $id ID
      * @param int $type_methodical_work_id Type Methodical Work ID
-     * @param int $request_id Request ID
-     * @param int $mark_name_one_id Mark Name One ID
-     * @param int $mark_name_two_id Mark Name Two ID
      * @return string|\yii\web\Response
      * @throws NotFoundHttpException if the model cannot be found
      */
@@ -181,8 +135,14 @@ class AdminMethodicalWorkController extends Controller
     {
         $model = $this->findModelById($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id, 'type_methodical_work_id' => $model->type_methodical_work_id, 'request_id' => $model->request_id, 'mark_name_one_id' => $model->mark_name_one_id, 'mark_name_two_id' => $model->mark_name_two_id]);
+        if ($this->request->isPost && $model->load($this->request->post())) {
+            if ($model->save()) {
+                return $this->redirect('/index.php?r=admin-type-methodical-work', 301)->send();
+            }
+            else {
+                \Yii::$app->session->setFlash('error', 'Ошибка записи');
+                return $this->redirect('/index.php?r=admin-type-methodical-work', 301)->send();
+            }
         }
 
         return $this->render('update', [
@@ -196,18 +156,54 @@ class AdminMethodicalWorkController extends Controller
      * Deletes an existing MethodicalWork model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param int $id ID
-     * @param int $type_methodical_work_id Type Methodical Work ID
-     * @param int $request_id Request ID
-     * @param int $mark_name_one_id Mark Name One ID
-     * @param int $mark_name_two_id Mark Name Two ID
      * @return \yii\web\Response
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id, $type_methodical_work_id, $request_id, $mark_name_one_id, $mark_name_two_id)
+    public function actionDelete($id, $request)
     {
-        $this->findModel($id, $type_methodical_work_id, $request_id, $mark_name_one_id, $mark_name_two_id)->delete();
+        $model = $this->findModelById($id);
+        if ($model->delete()) {
+            if ($this->controlDeleteRequest($request)) $this->deleteRequest($request);
+            return $this->redirect('/index.php?r=admin-type-methodical-work', 301)->send();
+        }
+        else {
+            \Yii::$app->session->setFlash('error', 'Ошибка удаления');
+            return $this->redirect('/index.php?r=admin-type-methodical-work', 301)->send();
+        }
+    }
 
-        return $this->redirect(['index']);
+    /**
+     * Deletes an existing MethodicalWork model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param array $id ID
+     * @return \yii\web\Response
+     */
+    public function actionDeleteMultiple()
+    {
+        $arrayCheckboxKeys = $_POST['arrayCheckboxKeys'];
+        $idRequest = $_POST['idRequest'];
+
+        $arr = json_decode($arrayCheckboxKeys, true);
+
+        $del = MethodicalWork::deleteAll(['and', ['in', 'type_methodical_work_id', $arr], ['=', 'request_id', $idRequest]]);
+        if ($del == 0) {
+            \Yii::$app->session->setFlash('warning', 'Ошибка удаления');
+        } else {
+            if ($this->controlDeleteRequest($idRequest)) $this->deleteRequest($idRequest);
+        }
+        return $this->redirect('/index.php?r=admin-type-methodical-work', 301)->send();
+    }
+
+    /**
+     * Get the number of records [[MethodicalWorks]] include in request
+     * If the number of records = 0 return true
+     * @param int $id ID
+     * @return boolean
+     */
+    protected function controlDeleteRequest($id) {
+        $request = Request::findOne($id);
+        $requestCount = $request->getCountMethodicalWorks();
+        return $requestCount == 0;
     }
 
     /**
@@ -237,6 +233,7 @@ class AdminMethodicalWorkController extends Controller
      * @return MethodicalWork the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
+
     protected function findModelById($id)
     {
         if (($model = MethodicalWork::findOne(['id' => $id])) !== null) {
@@ -257,8 +254,59 @@ class AdminMethodicalWorkController extends Controller
         if ($modelTypeEvent = TypeEvent::find()->select(['name'])->indexBy('id')->column()) {
             return $modelTypeEvent;
         }
-        //TODO поправить текст ошибки
+
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    /**
+     * Creates a new Request.
+     * @param int $userId ID
+     * @return integer id new Request
+     */
+    protected function createRequest($userId)
+    {
+        $model = new Request();
+
+            $model->table_name = 'methodical_work';
+            $model->date_request = \Yii::$app->formatter->asDate('now', 'yyyy.MM.dd');
+            $model->academic_year = \Yii::$app->session->get('academicYear');
+            $model->users_id_request = $userId;
+            $model->status_id = '1';
+            $model->response_id = '1';
+ 
+        if ($model->save()) {
+            return $model->id;
+        } else {
+            \Yii::$app->session->setFlash('warning', 'Ошибка записи');
+        }          
+    }
+
+    /**
+     * Deletes a new Request model.
+     * @param int $id ID
+     * @return string|\yii\web\Response
+     */
+    protected function deleteRequest($id) {
+        $request = Request::findOne($id);
+        if ($request !== null) {
+            $request->delete();
+        } else {
+            \Yii::$app->session->setFlash('warning', 'Ошибка записи');
+        }
+    }
+
+    /**
+     * Gets name for [[TypeMethodicalWork]].
+     * @param int $id ID
+     * @return string name
+     */
+    protected function getNameTypeMethodicalWork($id) {
+        $model = TypeMethodicalWork::findOne($id);
+        if ($model !== null) {
+            return $model->name;
+        } else {
+            \Yii::$app->session->setFlash('warning', 'Ошибка записи');
+        }   
     }
 
 }

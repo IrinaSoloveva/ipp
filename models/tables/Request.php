@@ -103,6 +103,16 @@ class Request extends \yii\db\ActiveRecord
         return $this->hasMany(MethodicalWork::class, ['request_id' => 'id']);
     }
 
+    /**
+     * Gets count of records [[MethodicalWorks]].
+     *
+     * @return integer
+     */
+    public function getCountMethodicalWorks()
+    {
+        return $this->hasMany(MethodicalWork::class, ['request_id' => 'id'])->count();
+    }
+
        /**
      * Gets array type_methodical_work_id for [[MethodicalWorks]].
      *

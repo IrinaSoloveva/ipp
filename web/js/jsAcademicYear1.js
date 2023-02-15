@@ -68,19 +68,43 @@ class AcademicYear {
     }
 
     _setPhpSession() {
-      fetch('php/phpSetAcademicYear.php?year=' + this._getActiveYear())
-        .then(response => {location.reload();});
+      let this_me = this;
+      $.ajax({
+        url: '/index.php?r=site/session-set&year=' + this_me._getActiveYear(),
+        type: 'post',
+        data: {
+          _csrf : yii.getCsrfToken()
+        },
+        success: function(){
+          location.reload();
+        },
+        error: {
+          function(jqxhr, status, errorMsg) {
+            console.log("Статус: " + status + " Ошибка: " + errorMsg);
+          }
+        }
+      });     
     }
 
     _getPhpSession() {
-      fetch('php/phpGetAcademicYear.php')
-        .then(response => response.text())
-        .then(year => {
-          this._setActiveYear(year);
-          this._createContainer();
-          this._renderClickYear();
-        });
-        
+      let this_me = this;
+      $.ajax({
+        url: '/index.php?r=site/session-get',
+        type: 'post',
+        data: {
+          _csrf : yii.getCsrfToken()
+        },
+        success: function(year){
+          this_me._setActiveYear(year);
+          this_me._createContainer();
+          this_me._renderClickYear();
+        },
+        error: {
+          function(jqxhr, status, errorMsg) {
+            console.log("Статус: " + status + " Ошибка: " + errorMsg);
+          }
+        }
+      });            
     }
 
     _getPaginationLiActive(label) {

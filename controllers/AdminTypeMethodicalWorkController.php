@@ -44,23 +44,22 @@ class AdminTypeMethodicalWorkController extends Controller
     {
         $searchModel = new TypeMethodicalWorkFilter();
         $dataProvider = $searchModel->search($this->request->queryParams);
+        $dataProvider->sort = false;
 
         $arrIdTypeMethodicalWorks = NULL;
         $arrIdMethodicalWorks = NULL;
         $idRequest = NULL;
 
-        $session = \Yii::$app->session;
-        if (!$session->has('academicYear')) 
-            $session->set('academicYear', date ('Y'));
-        $date = $session->get('academicYear');
+        $academicYear = \Yii::$app->session->get('academicYear');
+        $user = \Yii::$app->user->id;
 
         //пользователь авторизован
-        if (\Yii::$app->user->id) {
+        if (!is_null($user)) {
             $searchModelRequest = new RequestFilter();
             $dataProviderRequest = $searchModelRequest->search([
                 'table_name' => 'methodical_work',
-                'academic_year' => \Yii::$app->session->get('academicYear'),
-                'users_id_request' => \Yii::$app->user->id
+                'academic_year' => $academicYear,
+                'users_id_request' => $user
             ]);
 
             //существуют записи пользователя
