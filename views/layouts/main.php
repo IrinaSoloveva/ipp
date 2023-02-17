@@ -5,6 +5,7 @@
 
 use app\assets\AppAsset;
 use app\widgets\Alert;
+use app\widgets\AcademicYear;
 use yii\bootstrap5\Breadcrumbs;
 use yii\bootstrap5\Html;
 use yii\bootstrap5\Nav;
@@ -71,6 +72,8 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
 <nav aria-label="...">
     <ul id="academicYear" class="pagination"></ul>
 </nav>
+
+<?php echo AcademicYear::widget(); ?>
 
         <?= Alert::widget() ?>
         <?= $content ?>

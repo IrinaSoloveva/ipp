@@ -10,6 +10,7 @@ use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\tables\Users;
+use app\models\tables\Request;
 
 class SiteController extends Controller
 {
@@ -62,7 +63,58 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index', ['modelUsers' => Users::findOne(2)]);
+        $academicYear = \Yii::$app->session->get('academicYear');
+        $user = \Yii::$app->user->id;
+        $modelMethodicalWork = NULL;
+
+        //пользователь авторизован
+        if (!is_null($user)) {
+
+            $modelMethodicalWork = $this->getMethodicalWork($academicYear, $user);
+            //$modelScientificWork = $this->getScientificWork($academicYear, $user);
+            //$modelEducationalWork = $this->getEducationalWork($academicYear, $user);  
+            
+            return $this->render('index', ['modelMethodicalWork' => $modelMethodicalWork]);
+        }     
+
+        $model = new LoginForm();
+        if ($model->load(Yii::$app->request->post()) && $model->login()) {
+            return $this->goBack();
+        }
+
+        $model->password = '';
+        return $this->render('login', [
+            'model' => $model,
+        ]);
+    }
+
+    protected function getMethodicalWork ($academicYear, $userId, $arrayLoad=[]) {
+        $request = Request::findOne([
+            'table_name' => 'methodical_work',
+            'academic_year' => $academicYear,
+            'users_id_request' => $userId,
+        ]); 
+
+        // существуют записи
+        if (!is_null($request)) {
+            $arrayLoad["loadPlanOne"] = $request->getSumOnePlanMethodicalWorks();
+            $arrayLoad["loadFactOne"] = $request->getSumOneFactMethodicalWorks();
+            $arrayLoad["loadPlanTwo"] = $request->getSumTwoPlanMethodicalWorks();
+            $arrayLoad["loadFactTwo"] = $request->getSumTwoFactMethodicalWorks();
+            $arrayLoad["response"] = $request->getResponse();
+            $arrayLoad["requestId"] = (string) $request->id;
+            return $arrayLoad;
+        } else {
+            return $arrayLoad;
+        }   
+    }
+
+    protected function getScientificWork ($academicYear, $userId, $arrayLoad) {
+        
+    }
+
+    protected function getEducationalWork ($academicYear, $userId, $arrayLoad) {
+        
     }
 
     /**
@@ -156,4 +208,5 @@ class SiteController extends Controller
         if (!is_null($year)) $session['academicYear'] = $year;
         else $session['academicYear'] = date ('Y');
     }
+
 }

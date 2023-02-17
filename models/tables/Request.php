@@ -113,6 +113,46 @@ class Request extends \yii\db\ActiveRecord
         return $this->hasMany(MethodicalWork::class, ['request_id' => 'id'])->count();
     }
 
+    /**
+     * Gets sum of records [[MethodicalWorks]].
+     *
+     * @return double 
+     */
+    public function getSumOnePlanMethodicalWorks()
+    {
+        return $this->hasMany(MethodicalWork::class, ['request_id' => 'id'])->select('sum(load_plan_one)')->scalar();
+    }
+
+    /**
+     * Gets sum of records [[MethodicalWorks]].
+     *
+     * @return double 
+     */
+    public function getSumOneFactMethodicalWorks()
+    {
+        return $this->hasMany(MethodicalWork::class, ['request_id' => 'id'])->select('sum(load_fact_one)')->scalar();
+    }
+
+    /**
+     * Gets sum of records [[MethodicalWorks]].
+     *
+     * @return double 
+     */
+    public function getSumTwoPlanMethodicalWorks()
+    {
+        return $this->hasMany(MethodicalWork::class, ['request_id' => 'id'])->select('sum(load_plan_two)')->scalar();
+    }
+
+    /**
+     * Gets sum of records [[MethodicalWorks]].
+     *
+     * @return double 
+     */
+    public function getSumTwoFactMethodicalWorks()
+    {
+        return $this->hasMany(MethodicalWork::class, ['request_id' => 'id'])->select('sum(load_fact_two)')->scalar();
+    }
+
        /**
      * Gets array type_methodical_work_id for [[MethodicalWorks]].
      *
@@ -124,13 +164,13 @@ class Request extends \yii\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[Response]].
+     * Gets name for [[Response]].
      *
-     * @return \yii\db\ActiveQuery
+     * @return string
      */
     public function getResponse()
     {
-        return $this->hasOne(Response::class, ['id' => 'response_id']);
+        return $this->hasOne(Response::class, ['id' => 'response_id'])->select('name')->column()[0];
     }
 
     /**
