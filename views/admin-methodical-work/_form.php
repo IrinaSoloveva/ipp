@@ -14,14 +14,13 @@ use yii\jui\DatePicker;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <br>
     <div class="d-grid gap-2">
-        <a class="btn btn-outline-secondary btn-lg btn-lg" data-bs-toggle="collapse" href="#collapseExample1" role="button" aria-expanded="false" aria-controls="collapseExample">
+        <a class="my-3 btn btn-outline-secondary btn-lg btn-lg" data-bs-toggle="collapse" href="#collapseExample1" role="button" aria-expanded="false" aria-controls="collapseExample">
             <h4>I ПОЛУГОДИЕ</h4>
         </a>
     </div>
 
-    <div class="collapse" id="collapseExample1">
+    <div class="mb-3 collapse" id="collapseExample1">
         <?= $form->field($model, 'discipline_one')->textInput(['maxlength' => true])->label('Дисциплина (шифр специальности, направления подготовки)') ?>
 
         <?= $form->field($model, 'load_plan_one')->textInput(['maxlength' => true])->label('Планируемая работа (в часах)') ?>
@@ -51,14 +50,13 @@ use yii\jui\DatePicker;
         <?= $form->field($model, 'mark_number_one')->textInput()->label('Отметка о выполнении (номер протокола)') ?>     
     </div>
 
-    <br>
     <div class="d-grid gap-2">
-        <a class="btn btn-outline-secondary btn-lg btn-lg" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+        <a class="mb-3 btn btn-outline-secondary btn-lg btn-lg" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
             <h4>II ПОЛУГОДИЕ</h4>
         </a>
     </div>
 
-    <div class="collapse" id="collapseExample">
+    <div class="mb-3 collapse" id="collapseExample">
         <?= $form->field($model, 'discipline_two')->textInput(['maxlength' => true])->label('Дисциплина (шифр специальности, направления подготовки)') ?>
 
         <?= $form->field($model, 'load_plan_two')->textInput(['maxlength' => true])->label('Планируемая работа (в часах)') ?>
@@ -89,7 +87,6 @@ use yii\jui\DatePicker;
     </div>
 
     <div class="form-group">
-        <br>
         <?= Html::tag('a', 'Назад', ['class' => 'btn btn-outline-success btn-lg', 'href' => '/index.php?r=admin-type-methodical-work', 'role' => 'button']) ?>
         <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success btn-lg']) ?>
     </div>

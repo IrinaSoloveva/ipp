@@ -63,7 +63,7 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        $academicYear = \Yii::$app->session->get('academicYear');
+        $academicYear = empty(\Yii::$app->request->get('year')) ? \Yii::$app->params['currentAcademicYear'] : \Yii::$app->request->get('year');
         $user = \Yii::$app->user->id;
         $modelMethodicalWork = NULL;
 

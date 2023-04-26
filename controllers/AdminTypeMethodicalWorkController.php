@@ -50,51 +50,7 @@ class AdminTypeMethodicalWorkController extends Controller
         $arrIdMethodicalWorks = NULL;
         $idRequest = NULL;
 
-        $academicYear = \Yii::$app->session->get('academicYear');
-        $user = \Yii::$app->user->id;
-
-        //пользователь авторизован
-        if (!is_null($user)) {
-            $searchModelRequest = new RequestFilter();
-            $dataProviderRequest = $searchModelRequest->search([
-                'table_name' => 'methodical_work',
-                'academic_year' => $academicYear,
-                'users_id_request' => $user
-            ]);
-
-            //существуют записи пользователя
-            $arrayRequest = ArrayHelper::getColumn($dataProviderRequest->getKeys(), 'id');
-    
-            //TODO Предусмотреть, что запрос не может быть пустым!!! те если удалены все виды работ из запроса, то он не существует
-            if (!empty($arrayRequest)) {
-                $idRequest = $arrayRequest[0];
-                //select id, type_methodical_work_id from MethodicalWork
-                $arrIdMethodicalWorks = Request::findOne($idRequest)->getIdTypeMethodicalWorks();
-                //select type_methodical_work_id from MethodicalWork
-                $arrIdTypeMethodicalWorks = ArrayHelper::getColumn($arrIdMethodicalWorks, 'type_methodical_work_id');
-            }           
-        }     
-
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-            'arrIdTypeMethodicalWorks' => $arrIdTypeMethodicalWorks,
-            'arrIdMethodicalWorks' => $arrIdMethodicalWorks,
-            'idRequest' => $idRequest
-        ]);
-    }
-
-    public function actionStart($id)
-    {
-        $searchModel = new TypeMethodicalWorkFilter();
-        $dataProvider = $searchModel->search($this->request->queryParams);
-        $dataProvider->sort = false;
-
-        $arrIdTypeMethodicalWorks = NULL;
-        $arrIdMethodicalWorks = NULL;
-        $idRequest = NULL;
-
-        $academicYear = \Yii::$app->session->get('academicYear');
+        $academicYear = empty(\Yii::$app->request->get('year')) ? \Yii::$app->params['currentAcademicYear'] : \Yii::$app->request->get('year');
         $user = \Yii::$app->user->id;
 
         //пользователь авторизован

@@ -68,12 +68,10 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
                 'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
             ]) ?>
         <?php endif ?>
-
-<nav aria-label="...">
-    <ul id="academicYear" class="pagination"></ul>
-</nav>
-
-<?php echo AcademicYear::widget(); ?>
+             
+        <div class="mb-5">
+            <?php echo AcademicYear::widget(); ?>
+        </div>
 
         <?= Alert::widget() ?>
         <?= $content ?>

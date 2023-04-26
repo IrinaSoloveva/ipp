@@ -28,8 +28,8 @@ class AcademicYear extends Widget
             'currentPage' => $this->getCurrentPage(),
             'arrayAcademicYearLabel' => $this->getArrayAcademicYearLabel(),
             'arrayAcademicYear' => $this->getArrayAcademicYear(),
-            'firstPageLabel' => 'Начало',
-            'lastPageLabel' => 'Конец',
+            'firstPageLabel' => '<',
+            'lastPageLabel' => '>',
             'options' => [
                 'class' => 'pagination pagination-circle pg-blue mb-0'],
             'linkOptions' => ['class' => 'page-link'],
@@ -66,7 +66,6 @@ class AcademicYear extends Widget
 
     protected function getCurrentAcademicYear() {
         $year = \Yii::$app->request->get('year');
-
         $this->setCurrentAcademicYear($year);
 
         return Yii::$app->params['currentAcademicYear'];
@@ -74,6 +73,7 @@ class AcademicYear extends Widget
 
     protected function setCurrentAcademicYear($year) {
         Yii::$app->params['currentAcademicYear'] = empty($year) ? date('Y') : $year;
+        
         return Yii::$app->params['currentAcademicYear'];
     }
 

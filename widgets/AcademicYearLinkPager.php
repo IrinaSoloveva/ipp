@@ -40,7 +40,7 @@ class AcademicYearLinkPager extends LinkPager
         // first page
         $firstPageLabel = $this->firstPageLabel === true ? '1' : $this->firstPageLabel;
         if ($firstPageLabel !== false) {
-            $buttons[] = $this->renderPageButton($firstPageLabel, 0, $this->firstPageCssClass, $currentPage <= 0, false);
+            $buttons[] = $this->renderPageButton($firstPageLabel, 0, $this->firstPageCssClass, false, false);
         }
 
         // prev page
@@ -48,7 +48,7 @@ class AcademicYearLinkPager extends LinkPager
             if (($page = $currentPage - 1) < 0) {
                 $page = 0;
             }
-            $buttons[] = $this->renderPageButton($this->prevPageLabel, $page, $this->prevPageCssClass, $currentPage <= 0, false);
+            $buttons[] = $this->renderPageButton($this->prevPageLabel, $page, $this->prevPageCssClass, false, false);
         }
 
         // internal pages
@@ -62,13 +62,13 @@ class AcademicYearLinkPager extends LinkPager
             if (($page = $currentPage + 1) >= $pageCount - 1) {
                 $page = $pageCount - 1;
             }
-            $buttons[] = $this->renderPageButton($this->nextPageLabel, $page, $this->nextPageCssClass, $currentPage >= $pageCount - 1, false);
+            $buttons[] = $this->renderPageButton($this->nextPageLabel, $page, $this->nextPageCssClass, false, false);
         }
 
         // last page
         $lastPageLabel = $this->lastPageLabel === true ? $pageCount : $this->lastPageLabel;
         if ($lastPageLabel !== false) {
-            $buttons[] = $this->renderPageButton($lastPageLabel, $pageCount - 1, $this->lastPageCssClass, $currentPage >= $pageCount - 1, false);
+            $buttons[] = $this->renderPageButton($lastPageLabel, $pageCount - 1, $this->lastPageCssClass, false, false);
         }
 
         $options = $this->options;
